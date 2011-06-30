@@ -1,0 +1,14 @@
+This is not so CIish ATM, and I know that. (just because it was done in a hasty attempt to give client work on time)
+
+I will improve it when I can or anyone else can and send me Pull request :)
+
+The Table I use to log transaction is:
+CREATE TABLE `transactions` (
+  `id` varchar(16) NOT NULL,
+  `amount` float(10,2) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `cardholder_name` varchar(64) DEFAULT NULL,
+  `card_last_4` int(11) NOT NULL,
+  `status` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='latin1_swedish_ci';
