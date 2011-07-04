@@ -23,7 +23,7 @@ class Braintree_Lib
 	{
 		include 'addons/braintree/Braintree.php';
 		$this->CI =& get_instance();
-		$this->CI->load->library('paypal_lib');
+		$this->CI->load->model('transaction');
 
 		// Braintree settings
 		Braintree_Configuration::environment('sandbox');
@@ -53,18 +53,6 @@ class Braintree_Lib
 		return false;
 	}
 
-	private function _log_transaction( $transaction )
-	{
-		$trans = array( 'status' 					=> $transaction->status,
-										'card_last_4' 		=> $transaction->creditCardDetails->last4,
-										'cardholder_name' => $transaction->creditCardDetails->cardholderName,
-										'created_at'			=> $transaction->createdAt->format('Y-m-d H:i:s'),
-										'amount'					=> $transaction->amount,
-										'id'							=> $transaction->id,
-									);
-
-		$this->CI->transaction->create( $trans );
-	}
 
 	function quick_transaction( $cust_id, $token, $amount )
 	{
@@ -122,15 +110,32 @@ class Braintree_Lib
 	}
 
 
-	function create_subscription( $card_token, $plan_id )
+	function create_subscription( $card_token, $plan_id, $custom = '' )
 	{
 		$result = Braintree_Subscription::create( array('paymentMethodToken' => $card_token, 'planId' => $plan_id) );
 
 		if ( $result->success === true )
+		{
+			$this->_log_subscription( $result->subscription, $custom );
+
+			/*var_dump($result->subscription);
+			die();*/
 			return true;
+		}
 
 		/*$subscription = $result->subscription;
 		$transaction = $subscription->transactions[0];*/
+
+		$this->_parse_errors($result);
+		return false;
+	}
+
+	function cancel_subscription($sub_id)
+	{
+		$result = Braintree_Subscription::cancel($sub_id);
+
+		if ($result->success === true)
+    	return true;
 
 		$this->_parse_errors($result);
 		return false;
@@ -156,6 +161,25 @@ class Braintree_Lib
 		$data['cardholderName'] 	= $this->CI->input->post('holder');
 
 		return $data;
+	}
+
+	private function _log_transaction( $transaction )
+	{
+		$trans = array( 'status' 					=> $transaction->status,
+										'card_last_4' 		=> $transaction->creditCardDetails->last4,
+										'cardholder_name' => $transaction->creditCardDetails->cardholderName,
+										'created_at'			=> $transaction->createdAt->format('Y-m-d H:i:s'),
+										'amount'					=> $transaction->amount,
+										'id'							=> $transaction->id,
+									);
+
+		$this->CI->transaction->create( $trans );
+	}
+
+	private function _log_subscription( $subscription, $custom = '' )
+	{
+		$sub 	= array( 'sub_id'=>$subscription->id, 'user_id'=>$custom, 'json'=>json_encode($subscription) ); 
+		$this->CI->transaction->create_subscription( $sub );
 	}
 
 	// parses errors from Braintree result object and saves them for later use

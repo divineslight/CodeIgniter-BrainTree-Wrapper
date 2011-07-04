@@ -31,6 +31,15 @@ class Transaction extends CI_Model
 		return NULL;
 	}
 
+	function create_subscription($data)
+	{
+		if ($this->db->insert('subscriptions', $data))
+		 {
+			$subscription_id = $this->db->insert_id();
+			return array('subscription_id' => $subscription_id);
+		}
+		return NULL;
+	}
 }
 
 /* End of file users.php */
