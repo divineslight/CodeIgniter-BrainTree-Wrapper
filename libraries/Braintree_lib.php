@@ -27,9 +27,9 @@ class Braintree_Lib
 
 		// Braintree settings
 		Braintree_Configuration::environment('sandbox');
-		Braintree_Configuration::merchantId('zvdpy2jhfw4446kj');
-		Braintree_Configuration::publicKey('j5qz98wcgfk7q9cz');
-		Braintree_Configuration::privateKey('d462z4ydv837fqhm');	
+		Braintree_Configuration::merchantId('YOUR_MERCHANT_ID');
+		Braintree_Configuration::publicKey('YOUR_PUBLIC_KEY');
+		Braintree_Configuration::privateKey('YOUR_PRIVATE_KEY');	
 	}
 
 	function transaction( $card_info = array(), $amount )
