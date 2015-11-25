@@ -34,7 +34,7 @@ class Braintree_Lib
 
 	function transaction( $card_info = array(), $amount )
 	{
-		$result = Braintree_Transaction::sale( array(	'amount' => '100.00',
+		$result = Braintree_Transaction::sale( array(	'amount' => $amount,
 																							 		'creditCard' => $card_info,
 																									'options' => array( 'submitForSettlement' => true ),
 																							 )
